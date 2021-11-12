@@ -1,0 +1,8 @@
+.vscode/
+__pycache__/
+
+# Project-specific files and directories
+data/EMNIST/
+*.csv
+*.pt
+*.pkl
