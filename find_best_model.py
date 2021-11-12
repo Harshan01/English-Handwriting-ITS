@@ -121,7 +121,10 @@ def test_image():
     for k, v in sample_dataset.items():
         sample_dataset[k] = (v[0], cv2.imread(k))
 
-    best = (None, -1)
+    best = {
+        'funcs': [],
+        'score': -1
+    }
     for n_funcs in range(len(all_funcs)+1):
         for funcs_idx, funcs in enumerate(
             itertools.permutations(all_funcs, n_funcs)
@@ -130,14 +133,18 @@ def test_image():
             for sample in sample_dataset.values():
                 if recognize_image(sample[1], funcs) == sample[0]:
                     correct += 1
-            if correct > best[1]:
-                best = (funcs, correct)
+            if correct > best['score']:
+                best['funcs'] = [funcs]
+                best['score'] = correct
+            elif correct == best['score']:
+                best['funcs'].append(funcs)
             print(f'n_funcs={n_funcs:<10} \
                     func_idx={funcs_idx:<10} \
                     correct={correct}')
 
-    if (best[1] > 0):
-        print(f'\n\nBest has {best[1]} correct:-\n{list(zip(*best[0]))[0]}')
+    if best['score'] > 0:
+        print(f'\n\nBest score is {best["score"]}/{len(sample_dataset.keys())}:- \
+                \n{best["funcs"]}')
     else:
         print('\n\nNo permutation achieved a positive score')
 
