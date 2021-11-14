@@ -30,21 +30,16 @@ char_recog_model.eval()
 
 
 def get_character_segments(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    erode = cv2.erode(gray, np.ones((5, 5), np.uint8), iterations=1)
-    cv2.imshow("erode", erode)
-    cv2.waitKey(2000)
-    thresh2 = cv2.threshold(erode, 0, 255,
-                            cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    cv2.imshow("thresh2", thresh2)
-    cv2.waitKey(2000)
-    image = cv2.GaussianBlur(erode, (3, 3), 0)
-    cv2.imshow("gauss", image)
-    cv2.waitKey(2000)
-    image = cv2.Canny(image, 30, 150)
-    cv2.imshow("canny", image)
-    cv2.waitKey(2000)
-    cnts = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL,
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # ('erode_5-5_3', 'dilate_5-5_1', 'thresh_bin')
+    image = cv2.erode(image, np.ones((5, 5), np.uint8), iterations=3)
+    image = cv2.dilate(image, np.ones((5, 5), np.uint8), iterations=1)
+    image = cv2.threshold(image, 0, 255,
+                          cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+    canny = cv2.Canny(image, 30, 150)
+    cnts = cv2.findContours(canny, cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     cnts = sort_contours(cnts, method="left-to-right")[0]
@@ -55,7 +50,7 @@ def get_character_segments(image):
         (x, y, w, h) = cv2.boundingRect(c)
 
         # if (w >= 5 and w <= 150) and (h >= 50 and h <= 120):
-        roi = erode[y:y + h, x:x + w]
+        roi = image[y:y + h, x:x + w]
         thresh = cv2.threshold(roi, 0, 255,
                                cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
         (tH, tW) = thresh.shape
@@ -83,8 +78,6 @@ def get_character_segments(image):
 def get_recognized_character(segment):
     segment = CharRecogModel.get_transform()(segment).unsqueeze(0)
     segment = segment.to(device)
-    cv2.imshow("mat", np.expand_dims(segment.cpu().numpy().squeeze(), -1))
-    cv2.waitKey(1000)
     logits = char_recog_model(segment)  # Shape of logits is (1, N_CLASSES)
     return class_list[logits.argmax().cpu().item()]
 
@@ -100,7 +93,9 @@ def recognize_image(img):
 
 
 def test_image():
-    img = cv2.imread('test_img_3.jpeg')
+    img = cv2.imread('data/test_samples/test_img_2.jpeg')
+    cv2.imshow("mat", img)
+    cv2.waitKey(1000)
     print(recognize_image(img))
 
 
