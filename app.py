@@ -1,6 +1,5 @@
 # app.py
 import base64
-import json
 import pickle
 from io import BytesIO
 from flask import Flask, request, jsonify
@@ -32,8 +31,8 @@ char_recog_model.eval()
 def get_character_segments(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # ('erode_5-5_3', 'dilate_5-5_1', 'thresh_bin')
-    image = cv2.erode(image, np.ones((5, 5), np.uint8), iterations=3)
+    # ('erode_5-5_2', 'dilate_5-5_1', 'thresh_bin')
+    image = cv2.erode(image, np.ones((5, 5), np.uint8), iterations=2)
     image = cv2.dilate(image, np.ones((5, 5), np.uint8), iterations=1)
     image = cv2.threshold(image, 0, 255,
                           cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
@@ -93,15 +92,18 @@ def recognize_image(img):
 
 
 def test_image():
-    img = cv2.imread('data/test_samples/test_img_2.jpeg')
-    cv2.imshow("mat", img)
-    cv2.waitKey(1000)
-    print(recognize_image(img))
+    # img = cv2.imread('data/test_samples/test_img_2.jpeg')
+    import os
+    for file in os.listdir('data/test_samples/more'):
+        img = cv2.imread('data/test_samples/more/' + file)
+        # cv2.imshow("mat", img)
+        # cv2.waitKey(1000)
+        print(recognize_image(img))
 
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
-    data = json.loads(request.get_json())
+    data = request.get_json()
     img = BytesIO(base64.b64decode(data['image']))
     img = np.array(Image.open(img))[:, :, ::-1]
 
@@ -113,5 +115,5 @@ def recognize():
 
 
 if __name__ == '__main__':
-    test_image()
-    # app.run(port=5000, debug=True)
+    # test_image()
+    app.run(port=5000, debug=True)
