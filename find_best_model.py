@@ -23,11 +23,7 @@ char_recog_model = char_recog_model.to(device)
 char_recog_model.eval()
 
 sample_dataset = {
-    'data/test_samples/test_img_2.jpeg': ('harshan', None),
-    'data/test_samples/test_img_3.jpeg': ('pro', None),
-    'data/test_samples/test_img_4.jpeg': ('legend', None),
-    'data/test_samples/test_img_5.jpeg': ('legend', None),
-    'data/test_samples/test_img_6.jpeg': ('legend', None)
+    'data/test_samples/test_img.jpeg': ('testlabel', None)
 }
 
 kernel_3_3 = np.ones((3, 3), np.uint8)

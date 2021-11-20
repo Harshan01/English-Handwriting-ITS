@@ -91,10 +91,11 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    dataset1 = datasets.EMNIST('./data', split='letters', train=True,
+    # split='letters'
+    dataset1 = datasets.EMNIST('./data', split='byclass', train=True,
                                download=True,
                                transform=CharRecogModel.get_trans_transform())
-    dataset2 = datasets.EMNIST('./data', split='letters', train=False,
+    dataset2 = datasets.EMNIST('./data', split='byclass', train=False,
                                transform=CharRecogModel.get_trans_transform())
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)

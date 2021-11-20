@@ -85,18 +85,17 @@ def recognize_image(img):
     segments = get_character_segments(img)
     characters = []
     for segment in segments:
-        # cv2.imshow("mat", segment)
+        # cv2.imshow("segment", segment)
         # cv2.waitKey(1000)
         characters.append(get_recognized_character(segment))
     return ''.join(characters)
 
 
 def test_image():
-    # img = cv2.imread('data/test_samples/test_img_2.jpeg')
     import os
-    for file in os.listdir('data/test_samples/more'):
-        img = cv2.imread('data/test_samples/more/' + file)
-        # cv2.imshow("mat", img)
+    for file in os.listdir('data/test_samples'):
+        img = cv2.imread('data/test_samples/' + file)
+        # cv2.imshow("test_sample", img)
         # cv2.waitKey(1000)
         print(recognize_image(img))
 
