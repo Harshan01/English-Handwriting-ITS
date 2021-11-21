@@ -88,7 +88,20 @@ def recognize_image(img):
         # cv2.imshow("segment", segment)
         # cv2.waitKey(1000)
         characters.append(get_recognized_character(segment))
-    return ''.join(characters)
+
+    res = ''.join(characters).lower()
+    for k, v in {
+        '0': 'o',
+        '1': 'l',
+        '3': 'e',
+        '4': 'a',
+        '5': 's',
+        '6': 'b',
+        '8': 'b',
+        '9': 'q'
+    }.items():
+        res = res.replace(k, v)
+    return res
 
 
 def test_image():
